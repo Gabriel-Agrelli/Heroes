@@ -15,7 +15,7 @@ class InterceptorAPI : Interceptor {
         val httpUrl = originalRequest.url
 
         val newHttpUrl = httpUrl.newBuilder()
-            .addQueryParameter("limit", "4")
+            .addQueryParameter("limit", "20")
             .addQueryParameter("ts", currentTimestamp.toString())
             .addQueryParameter("apikey", BuildConfig.marvelPublicApiKey)
             .addQueryParameter("hash", hash)

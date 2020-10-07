@@ -11,26 +11,27 @@ import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
 
 class CharactersViewModel : ViewModel() {
-    var marvelService = MarvelService()
+    private var marvelService = MarvelService()
 
     private val disposable = CompositeDisposable()
 
     val characters = MutableLiveData<List<Character>>()
+    val searchCharacters = MutableLiveData<List<Character>>()
     val characterLoadError = MutableLiveData<Boolean>()
     val loading = MutableLiveData<Boolean>()
 
-    fun refresh() {
-        fetchCharacters()
+    fun getHeroes(offset: Int) {
+        fetchCharacters(offset)
     }
 
-    fun search(name: String) {
+    fun searchHeroes(name: String) {
         fetchCharactersByName(name)
     }
 
-    private fun fetchCharacters() {
+    private fun fetchCharacters(offset: Int) {
         loading.value = true
         disposable.add(
-            marvelService.getCharacters()
+            marvelService.getCharacters(offset)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(object : DisposableSingleObserver<CharacterResponse>() {
@@ -56,7 +57,7 @@ class CharactersViewModel : ViewModel() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(object : DisposableSingleObserver<CharacterResponse>() {
                     override fun onSuccess(value: CharacterResponse) {
-                        characters.value = value.data.results
+                        searchCharacters.value = value.data.results
                         loading.value = false
                         characterLoadError.value = false
                     }

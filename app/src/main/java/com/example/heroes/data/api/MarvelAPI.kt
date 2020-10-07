@@ -7,7 +7,7 @@ import retrofit2.http.Query
 
 interface MarvelAPI {
     @GET("v1/public/characters?")
-    fun getCharacters(): Single<CharacterResponse>
+    fun getCharacters(@Query("offset") offset: Int): Single<CharacterResponse>
 
     @GET("v1/public/characters?")
     fun getCharactersByName(@Query("name") name: String): Single<CharacterResponse>

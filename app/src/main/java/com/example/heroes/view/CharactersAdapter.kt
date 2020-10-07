@@ -11,9 +11,10 @@ import com.example.heroes.util.getProgressDrawable
 import com.example.heroes.util.loadImage
 import com.example.heroes.util.prepareImageURL
 import kotlinx.android.synthetic.main.item_character.view.*
+import okhttp3.internal.notify
 
 class CharactersAdapter : RecyclerView.Adapter<CharactersAdapter.CharacterViewHolder>() {
-    var characters = emptyList<Character>()
+    var characters = ArrayList<Character>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CharacterViewHolder {
         val view =
@@ -48,9 +49,19 @@ class CharactersAdapter : RecyclerView.Adapter<CharactersAdapter.CharacterViewHo
         }
     }
 
-    fun setData(characters: List<Character>) {
-        this.characters = characters
+    fun updateData(characters: List<Character>) {
+        this.characters.clear()
+        this.characters.addAll(characters)
+        notifyDataSetChanged()
+    }
+
+    fun addData(characters: List<Character>) {
+        this.characters.addAll(characters)
+        notifyDataSetChanged()
+    }
+
+    fun clearData() {
+        this.characters.clear()
         notifyDataSetChanged()
     }
 }
-

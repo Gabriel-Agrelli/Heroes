@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.widget.AbsListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -16,7 +15,6 @@ import com.example.heroes.viewmodel.CharactersViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
 
-
 class MainActivity : AppCompatActivity() {
     lateinit var viewModel: CharactersViewModel
     private val charactersAdapter: CharactersAdapter by lazy { CharactersAdapter() }
@@ -24,21 +22,48 @@ class MainActivity : AppCompatActivity() {
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
     private var searchJob: Job? = null
 
+    var offset = 0
+    var pastVisibleItems = 0
+    var totalItemCount: Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         viewModel = ViewModelProvider(this).get(CharactersViewModel::class.java)
-        viewModel.refresh()
+        viewModel.getHeroes(offset)
 
+        setupRecyclerView()
+        setListeners()
+        observeViewModel()
+    }
+
+    private fun setupRecyclerView() {
         rvCharacters.apply {
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
             layoutManager = LinearLayoutManager(context)
             adapter = charactersAdapter
-        }
 
-        setListeners()
-        observeViewModel()
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+
+                    if (dy > 0) {
+                        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+
+                        totalItemCount = layoutManager.itemCount
+                        pastVisibleItems = layoutManager.findLastVisibleItemPosition()
+
+                        if (viewModel.loading.value == false) {
+                            if (pastVisibleItems >= totalItemCount - 1) {
+                                offset += 20
+                                viewModel.getHeroes(offset)
+                            }
+                        }
+                    }
+                }
+            })
+        }
     }
 
     private fun setListeners() {
@@ -51,12 +76,13 @@ class MainActivity : AppCompatActivity() {
                     searchJob = coroutineScope.launch {
                         edtCharacterName.text.toString().trim().let {
                             delay(600)
-                            viewModel.search(it)
+                            viewModel.searchHeroes(it)
                         }
                     }
                 } else {
                     searchJob?.cancel()
-                    viewModel.refresh()
+                    charactersAdapter.clearData()
+                    viewModel.getHeroes(0)
                 }
             }
         })
@@ -66,7 +92,14 @@ class MainActivity : AppCompatActivity() {
         viewModel.characters.observe(this, Observer { characters ->
             characters?.let {
                 rvCharacters.visibility = View.VISIBLE
-                charactersAdapter.setData(it)
+                charactersAdapter.addData(it)
+            }
+        })
+
+        viewModel.searchCharacters.observe(this, Observer { characters ->
+            characters?.let {
+                rvCharacters.visibility = View.VISIBLE
+                charactersAdapter.updateData(it)
             }
         })
 

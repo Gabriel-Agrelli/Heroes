@@ -26,8 +26,8 @@ class MarvelService {
             .create(MarvelAPI::class.java)
     }
 
-    fun getCharacters(): Single<CharacterResponse> {
-        return api.getCharacters()
+    fun getCharacters(offset: Int): Single<CharacterResponse> {
+        return api.getCharacters(offset)
     }
 
     fun getCharactersByName(name: String): Single<CharacterResponse> {
