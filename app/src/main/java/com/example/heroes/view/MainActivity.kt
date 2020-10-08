@@ -39,16 +39,11 @@ class MainActivity : AppCompatActivity() {
         observeViewModel()
     }
 
-    private fun onClickCharacter(character: Character) {
-        CharacterDetailsActivity.open(this, character)
-    }
-
     private fun setupRecyclerView() {
         rvCharacters.apply {
+            adapter = charactersAdapter
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
             layoutManager = LinearLayoutManager(context)
-            adapter = charactersAdapter
-
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
@@ -123,5 +118,9 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    private fun onClickCharacter(character: Character) {
+        CharacterDetailsActivity.open(this, character)
     }
 }

@@ -7,7 +7,6 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.heroes.R
-import com.example.heroes.data.model.ImageVariant
 import java.math.BigInteger
 import java.security.MessageDigest
 
