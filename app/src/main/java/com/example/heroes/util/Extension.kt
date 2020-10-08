@@ -16,7 +16,7 @@ fun String.toMd5(): String {
     return BigInteger(1, md.digest(toByteArray())).toString(16).padStart(32, '0')
 }
 
-fun prepareImageURL(path: String, variant: ImageVariant, extension: String): String {
+fun prepareImageURL(path: String, variant: String, extension: String): String {
     return "${path}/${variant}.${extension}"
 }
 
@@ -29,10 +29,17 @@ fun getProgressDrawable(context: Context): CircularProgressDrawable {
     }
 }
 
-fun ImageView.loadImage(uri: String?, progressDrawable: CircularProgressDrawable) {
-    val options = RequestOptions()
+fun ImageView.loadImage(
+    uri: String?,
+    progressDrawable: CircularProgressDrawable,
+    circle: Boolean = false
+) {
+    var options = RequestOptions()
         .placeholder(progressDrawable)
-        .circleCrop()
+
+    if (circle) {
+        options = options.circleCrop()
+    }
 
     Glide.with(this.context)
         .setDefaultRequestOptions(options)

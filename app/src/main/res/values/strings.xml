@@ -2,4 +2,5 @@
     <string name="app_name">Heroes</string>
     <string name="label_character_name">Nome do Personagem</string>
     <string name="loading_data_error">An error occured while loading data</string>
+    <string name="comics">Comics</string>
 </resources>

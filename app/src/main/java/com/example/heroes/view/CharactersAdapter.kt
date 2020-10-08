@@ -13,7 +13,9 @@ import com.example.heroes.util.prepareImageURL
 import kotlinx.android.synthetic.main.item_character.view.*
 import okhttp3.internal.notify
 
-class CharactersAdapter : RecyclerView.Adapter<CharactersAdapter.CharacterViewHolder>() {
+class CharactersAdapter(val onCLick: (Character) -> Unit) :
+    RecyclerView.Adapter<CharactersAdapter.CharacterViewHolder>() {
+
     var characters = ArrayList<Character>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CharacterViewHolder {
@@ -27,6 +29,10 @@ class CharactersAdapter : RecyclerView.Adapter<CharactersAdapter.CharacterViewHo
 
     override fun onBindViewHolder(holder: CharacterViewHolder, position: Int) {
         holder.bind(characters[position])
+
+        with(holder.itemView) {
+            setOnClickListener { onCLick(characters[position]) }
+        }
     }
 
     class CharacterViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -37,13 +43,14 @@ class CharactersAdapter : RecyclerView.Adapter<CharactersAdapter.CharacterViewHo
         fun bind(character: Character) {
             val imgUrl = prepareImageURL(
                 character.thumbnail.path,
-                ImageVariant.standard_large,
+                ImageVariant.STANDARD_LARGE.string,
                 character.thumbnail.extension
             )
 
             imgCharacter.loadImage(
                 imgUrl,
-                progressDrawable
+                progressDrawable,
+                true
             )
             txtCharacterName.text = character.name
         }

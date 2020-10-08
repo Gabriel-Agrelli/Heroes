@@ -11,13 +11,14 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.heroes.R
+import com.example.heroes.data.model.Character
 import com.example.heroes.viewmodel.CharactersViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
     lateinit var viewModel: CharactersViewModel
-    private val charactersAdapter: CharactersAdapter by lazy { CharactersAdapter() }
+    private val charactersAdapter = CharactersAdapter(this::onClickCharacter)
 
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
     private var searchJob: Job? = null
@@ -36,6 +37,10 @@ class MainActivity : AppCompatActivity() {
         setupRecyclerView()
         setListeners()
         observeViewModel()
+    }
+
+    private fun onClickCharacter(character: Character) {
+        CharacterDetailsActivity.open(this, character)
     }
 
     private fun setupRecyclerView() {
